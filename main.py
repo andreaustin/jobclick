@@ -7,7 +7,7 @@ import streamlit as st
 
 
 def jobs_call(query_url, api_key=None):
-    st.info(query_url)
+    st.info(f"Query URL:\n{query_url}")
     params = {"api_key": api_key} if api_key else None
     job_response = requests.get(query_url, params=params)
     if job_response.status_code != 200:
@@ -118,18 +118,19 @@ if "jobs_response" not in st.session_state:
     st.session_state.jobs_response = None
 
 if search:
-    try:
-        st.session_state.jobs_response = get_jobs(
-            keywords,
-            location or None,
-            str(min_salary) if min_salary > 0 else None,
-            commute,
-            None if schedule_type == "Any" else schedule_type,
-            None if exp_level == "Any" else exp_level,
-            os.getenv("SERPAPI_KEY", api_key)
-        )
-    except Exception as error:
-        st.error(f"Error occurred while searching for jobs: {str(error)}")
+        try:
+            with st.spinner("Searching for jobs..."):
+                st.session_state.jobs_response = get_jobs(
+                    keywords,
+                    location or None,
+                    str(min_salary) if min_salary > 0 else None,
+                    commute,
+                    None if schedule_type == "Any" else schedule_type,
+                    None if exp_level == "Any" else exp_level,
+                    os.getenv("SERPAPI_KEY", api_key)
+            )
+        except Exception as error:
+            st.error(f"Error occurred while searching for jobs: {str(error)}")
 
 jobs_response = st.session_state.jobs_response
 if isinstance(jobs_response, dict):
