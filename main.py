@@ -1,6 +1,7 @@
 import os
 import requests
 import streamlit as st
+import browser_automation as auto
 
 # get_jobs("Software Engineer", location="New York, NY", min_salary=100000, remote=True, schedule_type="full-time")
 # api_key="d62231893de7d99101a146a8983ef6e147e617698ee096b5d78ab698963a188a"
@@ -75,7 +76,9 @@ def display_jobs(jobs):
             for option in job.get("apply_options", []):
                 link = option.get("link")
                 if link:
-                    st.link_button("View job", link)
+                    if st.button("Automate Application", key=f"apply_{link}"):
+                        auto.apply_to_job(link)
+                    st.link_button("View Job Posting", link)
                     break
 
 st.set_page_config(page_title="Job search", page_icon=":material/work:")
